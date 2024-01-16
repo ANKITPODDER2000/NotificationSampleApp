@@ -1,5 +1,6 @@
 package com.example.notificationsample
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import com.example.notificationsample.notification.BasicNotificationService
 import com.example.notificationsample.ui.theme.NotificationSampleTheme
 import com.example.notificationsample.viewmodel.MainViewModel
@@ -28,6 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mainViewModel by viewModels<MainViewModel>()
+        checkNotificationPermission()
         setContent {
             NotificationSampleTheme {
                 Surface(
@@ -37,6 +40,20 @@ class MainActivity : ComponentActivity() {
                     MainScreen(mainViewModel)
                 }
             }
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (ActivityCompat.checkSelfPermission(
+                this@MainActivity,
+                "android.permission.POST_NOTIFICATIONS"
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf("android.permission.POST_NOTIFICATIONS"),
+                500
+            )
         }
     }
 }
