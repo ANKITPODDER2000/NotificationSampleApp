@@ -1,9 +1,10 @@
 package com.example.notificationsample
 
-import android.content.pm.PackageManager
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -15,11 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
 import com.example.notificationsample.notification.BasicNotificationService
 import com.example.notificationsample.ui.theme.NotificationSampleTheme
 import com.example.notificationsample.viewmodel.MainViewModel
@@ -27,33 +29,57 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val mainViewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainViewModel by viewModels<MainViewModel>()
-        checkNotificationPermission()
+        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.GRANTED)
+            } else {
+                mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.NOT_GRANTED)
+            }
+        }
+
+        mainViewModel.checkNotificationPermission(this, launcher)
+
         setContent {
             NotificationSampleTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(mainViewModel)
+                    val permissionStatus by mainViewModel.permissionStatus.collectAsState()
+                    when (permissionStatus) {
+                        MainViewModel.PermissionStatus.GRANTED -> MainScreen(mainViewModel)
+                        MainViewModel.PermissionStatus.NOT_GRANTED -> PermissionNotGranted(
+                            mainViewModel
+                        )
+
+                        else -> {}
+                    }
                 }
             }
         }
-    }
 
-    private fun checkNotificationPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                this@MainActivity,
-                "android.permission.POST_NOTIFICATIONS"
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf("android.permission.POST_NOTIFICATIONS"),
-                500
-            )
+    }
+}
+
+@Composable
+fun PermissionNotGranted(mainViewModel: MainViewModel) {
+    val context = LocalContext.current as Activity
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp)
+    ) {
+
+        Text(
+            text = "Please allow the permission to use the application...",
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        CommonButton(btnTitle = "Check Permission") {
+            // mainViewModel.checkNotificationPermission(context, )
         }
     }
 }
