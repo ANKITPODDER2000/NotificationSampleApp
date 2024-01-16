@@ -55,6 +55,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
         CommonButton(btnTitle = "Post New Notification") {
             mainViewModel.postNewNotification()
         }
+
+        CommonButton(btnTitle = "Post increment counter Notification") {
+            mainViewModel.postIncrementCounterNotification()
+        }
     }
 }
 

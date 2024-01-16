@@ -33,4 +33,8 @@ class MainViewModel @Inject constructor(private val basicNotificationService: Ba
             true
         )
     }
+
+    fun postIncrementCounterNotification() {
+        basicNotificationService.showIncrementCounterNotification(BasicNotificationService.incrementCounter)
+    }
 }
