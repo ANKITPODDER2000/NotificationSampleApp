@@ -29,12 +29,16 @@ class MainViewModel @Inject constructor(private val basicNotificationService: Ba
         basicNotificationService.showNewNotification(
             "Basic Notification",
             largeContent,
-            true,
-            true
+            isAutoCancel = true,
+            isBigTextNotification = true
         )
     }
 
     fun postIncrementCounterNotification() {
         basicNotificationService.showIncrementCounterNotification(BasicNotificationService.incrementCounter)
+    }
+
+    fun postProgressBarNotification() {
+        basicNotificationService.showProgressBarNotification()
     }
 }

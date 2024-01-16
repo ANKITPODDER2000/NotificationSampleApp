@@ -4,12 +4,18 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
 import com.example.notificationsample.MainActivity
 import com.example.notificationsample.R
 import com.example.notificationsample.broadcast.IncrementBroadcastReceiver
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class BasicNotificationService @Inject constructor(@ApplicationContext val context: Context) {
@@ -21,11 +27,12 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
     var countForShowBasicNotification = 1
         private set
 
-    private var newNotificationId = 3
+    private var newNotificationId = 4
 
     companion object {
-        const val notificationId = 2
-        const val incrementCounterNotificationId = 3
+        const val notificationId = 1
+        const val incrementCounterNotificationId = 2
+        const val progressBarNotificationId = 3
         const val channelId = "BasicTestNotification"
         const val name = "Basic notification"
         private const val TAG = "BasicNotificationService"
@@ -84,6 +91,34 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
 
         val notification = notificationBuilder.build()
         notificationManager.notify(incrementCounterNotificationId, notification)
+    }
+
+    fun showProgressBarNotification() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val notificationBuilder = getBasicNotificationBuilder(
+                "Test download", "Fake downloading the content", 47895236,
+                autoCancel = true,
+                isBigTextNotification = false
+            )
+            notificationBuilder.setOnlyAlertOnce(true)
+            notificationBuilder.setVisibility(VISIBILITY_PRIVATE)
+            var curProgress = 0
+            postProgressBarNotification(curProgress, notificationBuilder)
+            for(i in 1 .. 10) {
+                delay(2000)
+                curProgress += 10
+                postProgressBarNotification(curProgress, notificationBuilder)
+            }
+            delay(5000)
+            notificationManager.cancel(progressBarNotificationId)
+        }
+    }
+    private fun postProgressBarNotification(progress: Int, notificationBuilder: NotificationCompat.Builder) {
+        notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH).setProgress(100, progress, false)
+        notificationBuilder.setVibrate(null)
+        notificationBuilder.setSound(Uri.EMPTY)
+        val notification = notificationBuilder.build()
+        notificationManager.notify(progressBarNotificationId, notification)
     }
 
     private fun getBasicNotificationBuilder(
