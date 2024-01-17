@@ -5,16 +5,20 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
+import androidx.core.app.Person
 import androidx.lifecycle.ViewModel
 import com.example.notificationsample.notification.BasicNotificationService
+import com.example.notificationsample.notification.MessageNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val basicNotificationService: BasicNotificationService) :
-    ViewModel() {
+class MainViewModel @Inject constructor(
+    private val basicNotificationService: BasicNotificationService,
+    private val messageNotificationService: MessageNotificationService,
+) : ViewModel() {
 
     enum class PermissionStatus {
         CHECKING,
@@ -61,7 +65,7 @@ class MainViewModel @Inject constructor(private val basicNotificationService: Ba
         _permissionStatus.value = permissionStatus
     }
 
-    fun checkNotificationPermission(context: Activity, launcher : ActivityResultLauncher<String>) {
+    fun checkNotificationPermission(context: Activity, launcher: ActivityResultLauncher<String>) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 "android.permission.POST_NOTIFICATIONS"
@@ -73,5 +77,21 @@ class MainViewModel @Inject constructor(private val basicNotificationService: Ba
             Log.d(TAG, "checkNotificationPermission: permission granted...")
             _permissionStatus.value = PermissionStatus.GRANTED
         }
+    }
+
+    fun postMessage() {
+        messageNotificationService.showMessageNotification(
+            getRandomUser("Test"),
+            getRandomUser("Ankit"),
+            arrayOf(largeContent, "Hey how are you...."),
+            System.currentTimeMillis()
+        )
+    }
+
+    private fun getRandomUser(userName: String): Person {
+        return Person.Builder()
+            .setIcon(null)
+            .setName(userName)
+            .build()
     }
 }

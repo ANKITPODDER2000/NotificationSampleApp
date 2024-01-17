@@ -106,6 +106,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
         CommonButton(btnTitle = "Post progress bar notification") {
             mainViewModel.postProgressBarNotification()
         }
+
+        CommonButton(btnTitle = "Post a message") {
+            mainViewModel.postMessage()
+        }
     }
 }
 
@@ -125,6 +129,6 @@ fun CommonButton(btnTitle: String, onClickListener: () -> Unit) {
 @Composable
 fun GreetingPreview() {
     NotificationSampleTheme {
-        MainScreen(MainViewModel(BasicNotificationService(LocalContext.current)))
+        // MainScreen(MainViewModel(BasicNotificationService(LocalContext.current)))
     }
 }
