@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.app.Person
 import androidx.lifecycle.ViewModel
+import com.example.notificationsample.ChatDB
 import com.example.notificationsample.notification.BasicNotificationService
 import com.example.notificationsample.notification.MessageNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -82,10 +83,15 @@ class MainViewModel @Inject constructor(
     fun postMessage() {
         messageNotificationService.showMessageNotification(
             getRandomUser("Test"),
-            getRandomUser("Ankit"),
-            arrayOf(largeContent, "Hey how are you...."),
+            createMessage("Ankit"),
             System.currentTimeMillis()
         )
+    }
+
+    private fun createMessage(name: String): Person {
+        val user = getRandomUser(name)
+        ChatDB.storeNewChat(user, Pair(user, "How Are you?"))
+        return user
     }
 
     private fun getRandomUser(userName: String): Person {

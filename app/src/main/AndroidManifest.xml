@@ -26,6 +26,7 @@
             </intent-filter>
         </activity>
         <receiver android:name=".broadcast.IncrementBroadcastReceiver" />
+        <receiver android:name=".broadcast.MessageReceiveReceiver" />
     </application>
 
 </manifest>
