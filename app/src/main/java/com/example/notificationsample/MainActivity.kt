@@ -107,6 +107,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
             mainViewModel.postProgressBarNotification()
         }
 
+        CommonButton(btnTitle = "Large Icon Notification") {
+            mainViewModel.showLargeIconNotification()
+        }
+
         CommonButton(btnTitle = "Post a message") {
             mainViewModel.postMessage()
         }

@@ -4,10 +4,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_HIGH
 import androidx.core.app.NotificationCompat.VISIBILITY_PRIVATE
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.example.notificationsample.MainActivity
 import com.example.notificationsample.R
 import com.example.notificationsample.broadcast.IncrementBroadcastReceiver
@@ -17,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 class BasicNotificationService @Inject constructor(@ApplicationContext val context: Context) {
 
@@ -104,7 +110,7 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
             notificationBuilder.setVisibility(VISIBILITY_PRIVATE)
             var curProgress = 0
             postProgressBarNotification(curProgress, notificationBuilder)
-            for(i in 1 .. 10) {
+            for (i in 1..10) {
                 delay(2000)
                 curProgress += 10
                 postProgressBarNotification(curProgress, notificationBuilder)
@@ -113,12 +119,45 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
             notificationManager.cancel(progressBarNotificationId)
         }
     }
-    private fun postProgressBarNotification(progress: Int, notificationBuilder: NotificationCompat.Builder) {
-        notificationBuilder.setPriority(NotificationCompat.PRIORITY_HIGH).setProgress(100, progress, false)
+
+    private fun postProgressBarNotification(
+        progress: Int,
+        notificationBuilder: NotificationCompat.Builder,
+    ) {
+        notificationBuilder.setPriority(PRIORITY_HIGH)
+            .setProgress(100, progress, false)
         notificationBuilder.setVibrate(null)
         notificationBuilder.setSound(Uri.EMPTY)
         val notification = notificationBuilder.build()
         notificationManager.notify(progressBarNotificationId, notification)
+    }
+
+    fun showImageNotification(title: String, content: String) {
+        val builder = getBasicNotificationBuilder(
+            title, content, 5555669,
+            autoCancel = true,
+            isBigTextNotification = true
+        ).setPriority(PRIORITY_HIGH)
+
+
+        Log.d(TAG, "showImageNotification: ------------------------ 1")
+        val largeIcon = (ResourcesCompat.getDrawable(
+            context.resources,
+            R.drawable.calculate_24,
+            null
+        ) as VectorDrawable).toBitmap()
+        val largeImage = (ResourcesCompat.getDrawable(
+            context.resources,
+            R.drawable.kolkata,
+            null
+        ) as Drawable).toBitmap()
+        builder.setLargeIcon(largeIcon).setStyle(
+            NotificationCompat.BigPictureStyle()
+                .bigPicture(largeImage).bigLargeIcon(null)
+        )
+        Log.d(TAG, "showImageNotification: ------------------------ 2")
+
+        notificationManager.notify(999, builder.build())
     }
 
     private fun getBasicNotificationBuilder(

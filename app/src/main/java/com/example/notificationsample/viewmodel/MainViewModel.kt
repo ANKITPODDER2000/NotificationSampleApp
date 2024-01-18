@@ -1,16 +1,20 @@
 package com.example.notificationsample.viewmodel
 
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
 import androidx.core.app.Person
+import androidx.core.graphics.drawable.IconCompat
 import androidx.lifecycle.ViewModel
 import com.example.notificationsample.ChatDB
+import com.example.notificationsample.R
 import com.example.notificationsample.notification.BasicNotificationService
 import com.example.notificationsample.notification.MessageNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -19,6 +23,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val basicNotificationService: BasicNotificationService,
     private val messageNotificationService: MessageNotificationService,
+    @ApplicationContext val context: Context
 ) : ViewModel() {
 
     enum class PermissionStatus {
@@ -96,8 +101,12 @@ class MainViewModel @Inject constructor(
 
     private fun getRandomUser(userName: String): Person {
         return Person.Builder()
-            .setIcon(null)
+            .setIcon(IconCompat.createWithResource(context, R.drawable.user))
             .setName(userName)
             .build()
+    }
+
+    fun showLargeIconNotification() {
+        basicNotificationService.showImageNotification("Large Icon Notification....", largeContent)
     }
 }
