@@ -23,7 +23,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val basicNotificationService: BasicNotificationService,
     private val messageNotificationService: MessageNotificationService,
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) : ViewModel() {
 
     enum class PermissionStatus {
@@ -100,6 +100,12 @@ class MainViewModel @Inject constructor(
     }
 
     private fun getRandomUser(userName: String): Person {
+        if (userName == "Ankit") {
+            return Person.Builder()
+                .setIcon(IconCompat.createWithResource(context, R.drawable.kolkata))
+                .setName(userName)
+                .build()
+        }
         return Person.Builder()
             .setIcon(IconCompat.createWithResource(context, R.drawable.user))
             .setName(userName)

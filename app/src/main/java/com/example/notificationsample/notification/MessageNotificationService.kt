@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
@@ -29,7 +30,10 @@ class MessageNotificationService @Inject constructor(
         person2: Person,
         timeStamp: Long,
     ) {
-        Log.d(TAG, "showMessageNotification: is called to show message person1 : ${person1.name} & person2 : ${person2.name}")
+        Log.d(
+            TAG,
+            "showMessageNotification: is called to show message person1 : ${person1.name} & person2 : ${person2.name}"
+        )
 
         val KEY_TEXT_REPLY = "key_text_reply"
         val replyLabel = "Enter the reply"
@@ -66,10 +70,14 @@ class MessageNotificationService @Inject constructor(
         messageTexts: ArrayList<Pair<Person, String>>?,
         timeStamp: Long,
     ): NotificationCompat.Builder {
-        val messageStyle = NotificationCompat.MessagingStyle(person1)
+        val AUTHORITY = "com.example.applicationcontentprovider"
+        val messageStyle = NotificationCompat.MessagingStyle(person1).setGroupConversation(true)
+            .setConversationTitle("Imp Discussion")
         if (!messageTexts.isNullOrEmpty()) {
             for (chat in messageTexts) {
-                messageStyle.addMessage(chat.second, timeStamp, chat.first)
+                val message = NotificationCompat.MessagingStyle.Message(chat.second, timeStamp, chat.first)
+                message.setData("image/*", Uri.parse("content://$AUTHORITY/test-icon"))
+                messageStyle.addMessage(message)
             }
         } else {
             Log.e(TAG, "getBasicMessageNotificationBuilder: Empty chats...")
