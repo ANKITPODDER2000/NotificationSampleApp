@@ -115,4 +115,8 @@ class MainViewModel @Inject constructor(
     fun showLargeIconNotification() {
         basicNotificationService.showImageNotification("Large Icon Notification....", largeContent)
     }
+
+    fun postNotificationWithDismissId() {
+        basicNotificationService.postBasicNotificationWithDismissId("Notification with dismiss id", "Large Content..........")
+    }
 }

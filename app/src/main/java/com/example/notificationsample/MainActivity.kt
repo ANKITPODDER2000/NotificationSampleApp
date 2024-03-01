@@ -33,13 +33,14 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val launcher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.GRANTED)
-            } else {
-                mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.NOT_GRANTED)
+        val launcher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.GRANTED)
+                } else {
+                    mainViewModel.updatePermissionGranted(MainViewModel.PermissionStatus.NOT_GRANTED)
+                }
             }
-        }
 
         mainViewModel.checkNotificationPermission(this, launcher)
 
@@ -52,9 +53,7 @@ class MainActivity : ComponentActivity() {
                     val permissionStatus by mainViewModel.permissionStatus.collectAsState()
                     when (permissionStatus) {
                         MainViewModel.PermissionStatus.GRANTED -> MainScreen(mainViewModel)
-                        MainViewModel.PermissionStatus.NOT_GRANTED -> PermissionNotGranted(
-                            mainViewModel
-                        )
+                        MainViewModel.PermissionStatus.NOT_GRANTED -> PermissionNotGranted()
 
                         else -> {}
                     }
@@ -66,8 +65,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PermissionNotGranted(mainViewModel: MainViewModel) {
-    val context = LocalContext.current as Activity
+fun PermissionNotGranted() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,6 +111,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
 
         CommonButton(btnTitle = "Post a message") {
             mainViewModel.postMessage()
+        }
+
+        CommonButton(btnTitle = "Post a Notification with Dismiss id") {
+            mainViewModel.postNotificationWithDismissId()
         }
     }
 }

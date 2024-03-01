@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.Person
-import androidx.core.app.RemoteInput
 import androidx.core.graphics.drawable.IconCompat
 import com.example.notificationsample.ChatDB
 import com.example.notificationsample.R
@@ -25,7 +24,7 @@ class MessageReceiveReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.d(TAG, "onReceive: is called")
         intent?.let {
-            val message = getMessageFromIntent(it).toString()
+            val message = getMessageFromIntent()
             val currentUser = getRandomUser("Test",
                 context?.let { it1 -> IconCompat.createWithResource(it1, R.drawable.user2) })
             val currentUser2 = getRandomUser("Ankit")
@@ -39,7 +38,7 @@ class MessageReceiveReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun getMessageFromIntent(intent: Intent): String {
+    private fun getMessageFromIntent(): String {
         // return RemoteInput.getResultsFromIntent(intent)?.getCharSequence("KEY_TEXT_REPLY").toString()
         return "Default Test message...,."
     }

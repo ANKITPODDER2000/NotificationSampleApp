@@ -43,6 +43,8 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
         const val name = "Basic notification"
         private const val TAG = "BasicNotificationService"
         var incrementCounter = 1
+        private const val DISMISSAL_ID = "MY_DISMISSAL_ID"
+        private const val BRIDGE_TAG_FOR_DISMISS_NOTIFICATION = "MY_DISMISSAL_NOTIFICATION"
     }
 
     fun showBasicNotification(
@@ -171,7 +173,7 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
             .setSmallIcon(R.drawable.notification_icon_24)
             .setContentTitle(title)
             .setContentText(content)
-            .setContentIntent(getPendingIntentForMainActivity(1))
+            .setContentIntent(getPendingIntentForMainActivity())
             .setAutoCancel(autoCancel) // Cancel on clicking Notification
             .setColor(color)
         if (isBigTextNotification) {
@@ -182,13 +184,27 @@ class BasicNotificationService @Inject constructor(@ApplicationContext val conte
         return notificationBuilder
     }
 
-    private fun getPendingIntentForMainActivity(requestCode: Int): PendingIntent {
+    private fun getPendingIntentForMainActivity(): PendingIntent {
         val intent = Intent(context, MainActivity::class.java)
         return PendingIntent.getActivity(
             context,
-            requestCode,
+            1,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
+    }
+
+    fun postBasicNotificationWithDismissId(title: String, text: String) {
+        val notification = getBasicNotificationBuilder(
+            title,
+            text,
+            142536,
+            autoCancel = true,
+            isBigTextNotification = false
+        ).extend(
+            NotificationCompat.WearableExtender().setDismissalId(DISMISSAL_ID)
+                .setBridgeTag(BRIDGE_TAG_FOR_DISMISS_NOTIFICATION)
+        ).build()
+        notificationManager.notify(413, notification)
     }
 }
