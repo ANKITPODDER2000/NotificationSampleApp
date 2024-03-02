@@ -20,7 +20,7 @@ class BasicNotificationService(private val context: Context) {
         const val name = "Basic notification"
         private const val TAG = "BasicNotificationService"
         private const val DISMISSAL_ID = "MY_DISMISSAL_ID"
-        private const val BRIDGE_TAG_FOR_DISMISS_NOTIFICATION = "MY_DISMISSAL_NOTIFICATION"
+        const val BRIDGE_TAG_FOR_DISMISS_NOTIFICATION = "MY_DISMISSAL_NOTIFICATION"
     }
 
     private fun getBasicNotificationBuilder(
@@ -64,14 +64,7 @@ class BasicNotificationService(private val context: Context) {
             isBigTextNotification = false
         ).extend(
             NotificationCompat.WearableExtender().setDismissalId(DISMISSAL_ID)
-                .setBridgeTag(BRIDGE_TAG_FOR_DISMISS_NOTIFICATION)
         ).build()
-
-        BridgingManager.fromContext(context).setConfig(
-            BridgingConfig.Builder(context, false)
-                .addExcludedTags(listOf(BRIDGE_TAG_FOR_DISMISS_NOTIFICATION))
-                .build()
-        )
 
         notificationManager.notify(413, notification)
     }
